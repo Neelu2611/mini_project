@@ -53,3 +53,13 @@ Final verification recorded 33 backend passes and 16 unique frontend passes. The
 - [Final report and screenshot index](docs/FINAL_PROJECT_REPORT.md)
 
 Historical evaluation was recorded in the notebook and has not been independently reproduced. This project is intended for academic demonstration. Model outputs are uncalibrated and must not guide clinical decisions.
+
+## Host on Render
+
+[Deploy this repository to Render](https://render.com/deploy?repo=https://github.com/Neelu2611/mini_project).
+
+The Blueprint builds the Next.js static dashboard and serves it through FastAPI on the same HTTPS origin. Browser requests to `/api/diabetes/predict` reach the model in the same service. The container listens on Render's assigned `PORT`. No database is required.
+
+1. Put the local `artifacts/diabetes-short-v1.ubj` in private file storage that supports a direct HTTPS download. Set the Blueprint secret `READMISSION_SHORT_MODEL_URL` to its download URL. The URL must remain valid for future service restarts. The server checks the downloaded bytes against the recorded SHA-256 before serving traffic.
+2. Select the repository and deploy the Blueprint. The configuration requests the free instance type. Review the plan before confirming.
+3. Once Render reports Live, open the service's public HTTPS URL. Use `/assessment/` for the questionnaire and `/api/health` for readiness. Submit a synthetic encounter and confirm the results page shows **Diabetes discharge XGBoost v1** before sharing the assessment URL.

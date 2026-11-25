@@ -1,0 +1,16 @@
+**
+!frontend/
+!frontend/**
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*
+!backend/
+!backend/**
+backend/**/__pycache__/
+!docs/
+!docs/*.json
+!artifacts/
+!artifacts/patient_readmission_model.pkl
+!scripts/
+!scripts/render_start.py
