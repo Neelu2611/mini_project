@@ -42,7 +42,7 @@ function BackendStatus() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const pathname = usePathname().replace(/\/$/, "") || "/";
+  const pathname = usePathname();
   const [openPath, setOpenPath] = useState<string | null>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const open = openPath === pathname;
