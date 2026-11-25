@@ -135,3 +135,9 @@ def predict(request: Request, patient: Annotated[PatientRequest, Body(openapi_ex
         raise ModelUnavailableError
     prediction = service.predict_patient(patient.model_dump(by_alias=True))
     return prediction | {"disclaimer": DISCLAIMER}
+
+@router.post("/diabetes/predict", response_model=PredictionResponse)
+def predict_diabetes(answers: dict):
+    """Predict using only the short discharge questionnaire."""
+    from ..services.short_prediction import short_prediction
+    return short_prediction(answers)

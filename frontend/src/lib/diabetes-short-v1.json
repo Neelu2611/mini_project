@@ -1,0 +1,206 @@
+{
+  "version": "Diabetes discharge XGBoost v1",
+  "source": "https://doi.org/10.24432/C5230J",
+  "archive_sha256": "f82ac129da2ddd2299391ff6fbae3a6a58b3edcf59ac9d7bd480c00fe453112a",
+  "model_sha256": "117b3ef8b616d60270753b5964504c187bf6d513544035dadebce2505526058f",
+  "fields": [
+    "age",
+    "time_in_hospital",
+    "number_inpatient",
+    "number_emergency",
+    "discharge_disposition_id",
+    "number_outpatient",
+    "num_medications",
+    "number_diagnoses",
+    "insulin",
+    "change"
+  ],
+  "columns": [
+    "time_in_hospital",
+    "number_inpatient",
+    "number_emergency",
+    "number_outpatient",
+    "num_medications",
+    "number_diagnoses",
+    "age=[0-10)",
+    "age=[10-20)",
+    "age=[20-30)",
+    "age=[30-40)",
+    "age=[40-50)",
+    "age=[50-60)",
+    "age=[60-70)",
+    "age=[70-80)",
+    "age=[80-90)",
+    "age=[90-100)",
+    "discharge_disposition_id=1",
+    "discharge_disposition_id=10",
+    "discharge_disposition_id=11",
+    "discharge_disposition_id=12",
+    "discharge_disposition_id=13",
+    "discharge_disposition_id=14",
+    "discharge_disposition_id=15",
+    "discharge_disposition_id=16",
+    "discharge_disposition_id=17",
+    "discharge_disposition_id=18",
+    "discharge_disposition_id=19",
+    "discharge_disposition_id=2",
+    "discharge_disposition_id=20",
+    "discharge_disposition_id=22",
+    "discharge_disposition_id=23",
+    "discharge_disposition_id=24",
+    "discharge_disposition_id=25",
+    "discharge_disposition_id=27",
+    "discharge_disposition_id=28",
+    "discharge_disposition_id=3",
+    "discharge_disposition_id=4",
+    "discharge_disposition_id=5",
+    "discharge_disposition_id=6",
+    "discharge_disposition_id=7",
+    "discharge_disposition_id=8",
+    "discharge_disposition_id=9",
+    "insulin=Down",
+    "insulin=No",
+    "insulin=Steady",
+    "insulin=Up",
+    "change=Ch",
+    "change=No"
+  ],
+  "allowed": {
+    "age": [
+      "[0-10)",
+      "[10-20)",
+      "[20-30)",
+      "[30-40)",
+      "[40-50)",
+      "[50-60)",
+      "[60-70)",
+      "[70-80)",
+      "[80-90)",
+      "[90-100)"
+    ],
+    "discharge_disposition_id": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      22,
+      23,
+      24,
+      25,
+      27,
+      28
+    ],
+    "insulin": [
+      "Down",
+      "No",
+      "Steady",
+      "Up"
+    ],
+    "change": [
+      "Ch",
+      "No"
+    ]
+  },
+  "bounds": {
+    "time_in_hospital": [
+      1,
+      14
+    ],
+    "number_inpatient": [
+      0,
+      21
+    ],
+    "number_emergency": [
+      0,
+      76
+    ],
+    "discharge_disposition_id": [
+      1,
+      28
+    ],
+    "number_outpatient": [
+      0,
+      42
+    ],
+    "num_medications": [
+      1,
+      81
+    ],
+    "number_diagnoses": [
+      1,
+      16
+    ]
+  },
+  "validation_macro_f1": {
+    "5": 0.4103810711205968,
+    "10": 0.4292737216103932
+  },
+  "test_encounters": 20153,
+  "test_patients": 14304,
+  "report": {
+    "0": {
+      "precision": 0.665983206404999,
+      "recall": 0.6193027056473579,
+      "f1-score": 0.6417952578095597,
+      "support": 11014.0
+    },
+    "1": {
+      "precision": 0.4394394394394394,
+      "recall": 0.3141099026903263,
+      "f1-score": 0.3663523324710006,
+      "support": 6988.0
+    },
+    "2": {
+      "precision": 0.18653376729048007,
+      "recall": 0.42631334263133425,
+      "f1-score": 0.259516060563181,
+      "support": 2151.0
+    },
+    "accuracy": 0.4928794720389024,
+    "macro avg": {
+      "precision": 0.43065213771163946,
+      "recall": 0.45324198365633944,
+      "f1-score": 0.4225545502812471,
+      "support": 20153.0
+    },
+    "weighted avg": {
+      "precision": 0.5362564368376561,
+      "recall": 0.4928794720389024,
+      "f1-score": 0.505484151991924,
+      "support": 20153.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      6821,
+      2253,
+      1940
+    ],
+    [
+      2734,
+      2195,
+      2059
+    ],
+    [
+      687,
+      547,
+      917
+    ]
+  ]
+}

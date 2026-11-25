@@ -12,7 +12,7 @@ function Test-ProjectServer {
             return ($spec.info.title -eq 'Patient Readmission Prediction System' -and $null -ne $spec.paths.'/api/predict'.post)
         }
         $page = Invoke-WebRequest -Uri 'http://127.0.0.1:3000/' -TimeoutSec 8 -UseBasicParsing -ErrorAction Stop
-        return ($page.Content -match '<title>Patient Readmission Prediction System</title>')
+        return ($page.Content -match '<title>Diabetes Readmission Prediction System</title>')
     } catch {
         return $false
     }

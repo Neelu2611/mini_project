@@ -1,23 +1,20 @@
 "use client";
 
-import { ClipboardCheck, ClipboardList, FlaskConical, RotateCcw, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AssessmentField } from "./assessment-field";
 import { useAssessmentSession } from "./assessment-session";
 import { useFeatures } from "@/hooks/use-backend";
 import { api, ApiError } from "@/lib/api";
 import type { Features } from "@/lib/api-contracts";
 import {
-  buildPatientPayload, checkAssessmentSchema, formatAnswer, validateAnswers,
+  checkAssessmentSchema, validateAnswers,
   type Answer, type FieldErrors,
 } from "@/lib/assessment";
-import { questionFor, questions, sections, type FeatureKey } from "@/lib/assessment-questions";
+import { questionFor, questions, type FeatureKey } from "@/lib/assessment-questions";
 
-const review = { id: "review", title: "Final review and confirmation", short: "Review" };
-const steps = [...sections, review];
-const reviewIndex = sections.length;
-
+import evaluation from "@/lib/diabetes-short-v1.json";
+const shortKeys = evaluation.fields as FeatureKey[];
 function predictionErrorMessage(error: unknown) {
   if (!(error instanceof ApiError)) return "Prediction could not be completed. Please try again.";
   switch (error.kind) {
@@ -52,208 +49,71 @@ export function AssessmentForm() {
 
 function AssessmentWizard({ schema }: { schema: Features }) {
   const router = useRouter();
-  const { draft: { answers, demo, step }, setDraft, setResult, clearAssessment } = useAssessmentSession();
+  const { draft: { answers }, setDraft, setResult, clearAssessment } = useAssessmentSession();
+  const fields = shortKeys.map(key => schema.features.find(field => field.column === key)!);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [confirmed, setConfirmed] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [submissionError, setSubmissionError] = useState("");
-  const [demoLoading, setDemoLoading] = useState(false);
-  const [demoError, setDemoError] = useState("");
-  const demoRequest = useRef<AbortController | null>(null);
-  const predictionRequest = useRef<AbortController | null>(null);
-  const heading = useRef<HTMLHeadingElement>(null);
-  const shouldFocusStep = useRef(false);
-  const grouped = sections.map((group) => schema.features.filter((field) =>
-    questionFor(field.column as FeatureKey).section === group.id));
-  const answered = schema.features.filter((field) => answers[field.column as FeatureKey] !== undefined &&
-    answers[field.column as FeatureKey] !== "").length;
-
-  useEffect(() => () => {
-    demoRequest.current?.abort();
-    predictionRequest.current?.abort();
-  }, []);
-  useEffect(() => {
-    if (shouldFocusStep.current) {
-      heading.current?.focus();
-      shouldFocusStep.current = false;
-    }
-  }, [step]);
-
-  function goTo(next: number) {
-    if (next !== step) shouldFocusStep.current = true;
-    setDraft((old) => ({ ...old, step: next }));
-    setErrors({});
-    setConfirmed(false);
-    setSubmissionError("");
-  }
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const request = useRef<AbortController | null>(null);
+  useEffect(() => () => request.current?.abort(), []);
 
   function update(key: FeatureKey, value: Answer | undefined) {
-    setDraft((old) => ({ ...old, answers: { ...old.answers, [key]: value } }));
+    setDraft(old => ({ ...old, answers: { ...old.answers, [key]: value } }));
     setResult(null);
-    setErrors((old) => {
-      const remaining = { ...old };
-      delete remaining[key];
-      return remaining;
-    });
+    setErrors(old => ({ ...old, [key]: undefined }));
+    setMessage("");
   }
 
-  function reset() {
-    if (predictionRequest.current) return;
-    demoRequest.current?.abort();
-    demoRequest.current = null;
-    setDemoLoading(false);
-    setDemoError("");
-    clearAssessment();
-    goTo(0);
-  }
-
-  async function loadDemo() {
-    if (predictionRequest.current || demoRequest.current) return;
-    const controller = new AbortController();
-    demoRequest.current = controller;
-    setDemoLoading(true);
-    setDemoError("");
-    try {
-      const sample = await api.samplePatient(controller.signal);
-      if (controller.signal.aborted) return;
-      const patient = buildPatientPayload(schema, sample.patient);
-      setDraft((old) => ({ ...old, answers: patient, demo: true }));
-      setResult(null);
-      goTo(0);
-    } catch (error) {
-      if (!controller.signal.aborted) {
-        setDemoError(error instanceof ApiError ? error.message : "The synthetic fixture does not match the verified form.");
-      }
-    } finally {
-      if (demoRequest.current === controller) {
-        demoRequest.current = null;
-        setDemoLoading(false);
-      }
-    }
-  }
-
-  function continueAssessment(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (predictionRequest.current || demoRequest.current) return;
-    const fields = step < reviewIndex ? grouped[step] : schema.features;
+  async function predict() {
+    if (request.current) return;
     const invalid = validateAnswers(fields, answers);
-    const first = Object.keys(invalid)[0] as FeatureKey | undefined;
-    if (first) {
-      if (step === reviewIndex) goTo(sections.findIndex((section) => section.id === questionFor(first).section));
-      setErrors(invalid);
-      requestAnimationFrame(() => document.getElementById(`field-${first}`)?.focus());
-      return;
+    for (const field of fields) {
+      const key = field.column as FeatureKey;
+      const bounds = (evaluation.bounds as Record<string, number[]>)[key];
+      const value = Number(answers[key]);
+      if (bounds && (value < bounds[0] || value > bounds[1])) invalid[key] = "Enter a value between " + bounds.join(" and ") + ".";
+      const allowed = (evaluation.allowed as Record<string, (string | number)[]>)[key];
+      if (allowed && !allowed.some(option => String(option) === String(answers[key]))) invalid[key] = "Select a value represented in the training data.";
     }
-    if (step < reviewIndex) {
-      goTo(step + 1);
-    } else if (confirmed) {
-      void submitPrediction();
-    }
-  }
-
-  async function submitPrediction() {
+    setErrors(invalid);
+    if (Object.keys(invalid).length) return;
     const controller = new AbortController();
-    predictionRequest.current = controller;
-    setSubmitting(true);
-    setSubmissionError("");
-    setResult(null);
+    request.current = controller;
+    setBusy(true);
+    setMessage("");
     try {
-      const prediction = await api.predict(buildPatientPayload(schema, answers), controller.signal);
+      const patient = Object.fromEntries(fields.map(field => {
+        const value = answers[field.column as FeatureKey];
+        return [field.column, field.type === "integer" ? Number(value) : value];
+      }));
+      const prediction = await api.predictDiabetes(patient, controller.signal);
       if (controller.signal.aborted) return;
-      setResult({ prediction, synthetic: demo });
+      setResult({ prediction, synthetic: false });
       router.push("/results");
     } catch (error) {
-      if (!controller.signal.aborted) {
-        predictionRequest.current = null;
-        setSubmitting(false);
-        setSubmissionError(predictionErrorMessage(error));
-      }
+      if (!controller.signal.aborted) setMessage(predictionErrorMessage(error));
+    } finally {
+      request.current = null;
+      if (!controller.signal.aborted) setBusy(false);
     }
   }
 
-  return (
-    <div className="assessment">
-      <div className="assessment-notice">
-        <ShieldCheck size={21} aria-hidden="true" />
-        <p><strong>Academic prototype.</strong> Use synthetic or de-identified information. This form is for staff-assisted demonstration and must not guide clinical decisions.</p>
-      </div>
-      <div className="assessment-toolbar">
-        <div className="assessment-actions">
-          <button type="button" className="assessment-button demo-button" onClick={loadDemo} disabled={demoLoading || submitting}>
-            <FlaskConical size={17} aria-hidden="true" /> {demoLoading ? "Loading demo…" : "Load Demo Patient"}
-          </button>
-          <button type="button" className="assessment-button reset-button" onClick={reset} disabled={submitting}>
-            <RotateCcw size={16} aria-hidden="true" /> Reset Form
-          </button>
-        </div>
-        {demo && <span className="demo-label" role="status">Synthetic demo loaded. Reset before entering other information.</span>}
-      </div>
-      {demoError && <p className="assessment-error" role="alert">{demoError}</p>}
-      <div className="assessment-layout">
-        <nav className="panel assessment-progress" aria-label="Assessment progress">
-          <p className="step-progress-label">Step {step + 1} of {steps.length}</p>
-          <progress value={step + 1} max={steps.length} aria-label="Assessment steps" />
-          <ol>
-            {steps.map((entry, index) => (
-              <li key={entry.id} aria-current={index === step ? "step" : undefined}>
-                <span>{index + 1}</span>{entry.short}
-              </li>
-            ))}
-          </ol>
-          <p className="answer-count">{answered} of {schema.features.length} answered</p>
-        </nav>
-        <form className="panel assessment-card" onSubmit={continueAssessment} noValidate autoComplete="off">
-          <div className="assessment-card-heading">
-            <span className="feature-icon">{step === reviewIndex ? <ClipboardCheck size={21} /> : <ClipboardList size={21} />}</span>
-            <div>
-              <h2 tabIndex={-1} ref={heading}>{steps[step].title}</h2>
-              <p>{step < reviewIndex ? sections[step].detail : "Check the answers against the available records before confirming."}</p>
-            </div>
-          </div>
-          {Object.keys(errors).length > 0 && <p className="assessment-error" role="alert">Review the highlighted answers before continuing.</p>}
-          {step < reviewIndex ? (
-            <div className="assessment-fields" key={step}>
-              {grouped[step].map((field) => {
-                const key = field.column as FeatureKey;
-                return <AssessmentField key={key} field={field} answer={answers[key]} error={errors[key]} onChange={(value) => update(key, value)} />;
-              })}
-            </div>
-          ) : (
-            <>
-              <div className="review-groups">
-                {sections.map((section, index) => (
-                  <section className="review-group" key={section.id}>
-                    <div className="review-heading">
-                      <h3>{section.short}</h3>
-                      <button type="button" onClick={() => goTo(index)} aria-label={`Edit ${section.short}`} disabled={submitting || demoLoading}>Edit</button>
-                    </div>
-                    <dl>
-                      {grouped[index].map((field) => {
-                        const key = field.column as FeatureKey;
-                        const answer = answers[key];
-                        return <div key={key}><dt>{questionFor(key).question}</dt><dd>{answer === undefined ? "Unanswered" : formatAnswer(field, answer)}</dd></div>;
-                      })}
-                    </dl>
-                  </section>
-                ))}
-              </div>
-              <label className="review-confirmation">
-                <input type="checkbox" checked={confirmed} disabled={submitting || demoLoading} onChange={(event) => setConfirmed(event.target.checked)} />
-                I reviewed the answers and confirm they are appropriate for this demonstration.
-              </label>
-              {submitting && <p className="assessment-prepared" role="status">Running prediction…</p>}
-              {submissionError && <p className="assessment-error" role="alert">{submissionError}</p>}
-            </>
-          )}
-          <div className="assessment-footer">
-            <button type="button" className="assessment-button reset-button" disabled={step === 0 || submitting || demoLoading} onClick={() => goTo(step - 1)}>Previous</button>
-            <button type="submit" className="assessment-button assessment-primary"
-              disabled={demoLoading || submitting || (step === reviewIndex && !confirmed)}>
-              {step < reviewIndex ? "Next" : submitting ? "Predicting…" : submissionError ? "Retry Prediction" : "Predict Readmission"}
-            </button>
-          </div>
-        </form>
-      </div>
+  return <form className="panel assessment-card" noValidate onSubmit={event => {
+    event.preventDefault();
+    void predict();
+  }}>
+    <h2>Diabetes discharge assessment</h2>
+    <fieldset className="assessment-fields" disabled={busy}>
+      {fields.map(field => {
+        const key = field.column as FeatureKey;
+        return <AssessmentField key={key} field={field} answer={answers[key]} error={errors[key]} onChange={value => update(key, value)} />;
+      })}
+    </fieldset>
+    <p>Academic prototype for de-identified diabetes encounters. All model inputs come from these answers.</p>
+    {message && <p role="alert">{message}</p>}
+    <div className="assessment-footer">
+      <button type="button" disabled={busy} className="assessment-button" onClick={() => { clearAssessment(); setErrors({}); setMessage(""); }}>Reset</button>
+      <button disabled={busy} className="assessment-button assessment-primary">{busy ? "Predicting?" : "Predict Readmission"}</button>
     </div>
-  );
+  </form>;
 }

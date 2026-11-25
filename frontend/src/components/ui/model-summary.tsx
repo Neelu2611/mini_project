@@ -47,7 +47,7 @@ export function ModelSummary({ welcome }: { welcome: ReactNode }) {
         <section className="panel model-panel" aria-labelledby="model-summary" aria-busy={state.status === "loading"}>
           <div className="model-heading">
             <span className="feature-icon"><Layers3 size={20} aria-hidden="true" /></span>
-            <h2 id="model-summary">Model overview</h2>
+            <h2 id="model-summary">Original notebook model</h2>
           </div>
           {state.status === "loading" && <p className="state-copy" role="status">Loading model information…</p>}
           {state.status === "error" && (

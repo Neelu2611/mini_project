@@ -3,9 +3,9 @@ import { Activity, ClipboardList, HeartPulse, ScanLine, ShieldCheck } from "luci
 import { ModelSummary } from "@/components/ui/model-summary";
 
 const workflow = [
-  { title: "Enter encounter details", description: "Provide the required demographic, hospital, diagnosis, lab and medication fields.", icon: ClipboardList },
-  { title: "Validate and transform", description: "The backend checks the inputs and applies the original fitted preprocessor.", icon: ScanLine },
-  { title: "Review the model output", description: "Balanced XGBoost returns a predicted class and scores for all three outcomes.", icon: Activity },
+  { title: "Enter encounter details", description: "Answer a short questionnaire using the diabetes discharge record.", icon: ClipboardList },
+  { title: "Validate and transform", description: "The backend checks the inputs and encodes the answers for the diabetes discharge model.", icon: ScanLine },
+  { title: "Review the model output", description: "The diabetes discharge model returns a predicted class and scores for all three outcomes.", icon: Activity },
 ];
 
 export default function Dashboard() {
@@ -18,7 +18,7 @@ export default function Dashboard() {
         <section className="overview-hero" aria-labelledby="overview-title">
           <div className="hero-content">
             <div className="hero-icon"><HeartPulse size={25} strokeWidth={1.7} aria-hidden="true" /></div>
-            <h2 id="overview-title">Patient Readmission Prediction System</h2>
+            <h2 id="overview-title">Diabetes Readmission Prediction System</h2>
             <p>Explore how a fitted model uses discharge encounter data to classify hospital readmission outcomes.</p>
             <Link href="/assessment" className="hero-link"><ClipboardList size={18} aria-hidden="true" /> Start Patient Assessment</Link>
           </div>

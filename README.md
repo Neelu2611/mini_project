@@ -1,6 +1,6 @@
 ﻿# Patient Readmission Prediction System
 
-Local academic prototype for staff-assisted discharge assessment and three-class readmission prediction. Next.js sends 47 verified inputs to FastAPI. Python applies the original fitted preprocessor and Balanced XGBoost model, then returns ordered, uncalibrated scores.
+The live diabetes discharge assessment sends ten answers to the trained Diabetes discharge XGBoost v1 model through FastAPI. The original notebook model remains available at /api/predict.
 
 ## Start locally
 
@@ -18,7 +18,7 @@ The launcher reuses recognized project listeners and leaves other processes alon
 
 ## Application workflow
 
-Open **Patient Assessment**, choose **Load Demo Patient**, review all seven steps, confirm, and select **Predict Readmission**. Results include an outcome card, donut and bar charts, exact-score rows, and a print summary. The demo is synthetic. Drafts and results stay in memory and clear on a full page reload or when starting over.
+Open **Patient Assessment**, enter ten de-identified discharge details, and select **Predict Readmission**. Live inference uses POST /api/diabetes/predict. Evaluation and source details are in docs/diabetes-short-v1.json. Rebuild the local model from Dataset/uci296-public.zip using the project Python environment and scripts/train_diabetes_short.py.
 
 Model Analytics shows recorded notebook evaluation. Dataset Overview documents the supplied 1,879-row workbook and its compatibility limits. About the System explains how the application passes the 47 fields through the fitted pipeline to produce 2,396 transformed columns and three ordered outcomes.
 

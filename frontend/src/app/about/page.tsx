@@ -4,16 +4,16 @@ import "../insights.css";
 export const metadata = { title: "About the System" };
 
 const flow = [
-  { icon: Monitor, title: "Next.js", detail: "Seven-step assessment, review and score presentation." },
-  { icon: Server, title: "FastAPI", detail: "Validates the 47-field JSON request and returns ordered scores." },
-  { icon: Layers3, title: "Fitted preprocessor", detail: "Encodes the same categories and produces 2,396 columns." },
-  { icon: Cpu, title: "Balanced XGBoost", detail: "Scores the three outcomes using the original trained model." },
+  { icon: Monitor, title: "Next.js", detail: "Ten discharge questions for patients diagnosed with diabetes." },
+  { icon: Server, title: "FastAPI", detail: "Validates the 10-field JSON request and returns ordered scores." },
+  { icon: Layers3, title: "Fitted preprocessor", detail: "Encodes recorded categories using the short model?s training columns." },
+  { icon: Cpu, title: "Balanced XGBoost", detail: "Scores the three outcomes using the diabetes discharge model." },
 ];
 
 export default function About() {
   return (
     <>
-      <header className="page-intro"><h1>About the System</h1><p>Patient Readmission Prediction System</p></header>
+      <header className="page-intro"><h1>About the System</h1><p>Diabetes Readmission Prediction System</p></header>
       <section className="panel insights-panel">
         <h2>Project objective</h2>
         <p>Demonstrate how structured discharge-encounter data can be validated and scored for three historical readmission outcomes. The workflow is designed for a staff-assisted academic demonstration with verified synthetic examples.</p>
@@ -29,8 +29,8 @@ export default function About() {
           <h2><ClipboardList size={19} aria-hidden="true" /> Prediction workflow</h2>
           <ol className="method-steps">
             <li>Complete and confirm the encounter fields. The frontend sends one typed request.</li>
-            <li>Python preserves fitted feature order and categorical strings, maps explicit null lab answers to <code>Not measured</code>, and retains numeric passthrough fields.</li>
-            <li>The original fitted transformer and classifier generate an ordered prediction. Next.js keeps the current draft and result in memory.</li>
+            <li>Python validates the ten answers and encodes them in training order.</li>
+            <li>The short-model encoder and classifier generate an ordered prediction. Next.js keeps the current draft and result in memory.</li>
           </ol>
         </section>
         <section className="panel insights-panel">

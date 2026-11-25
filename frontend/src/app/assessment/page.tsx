@@ -8,7 +8,7 @@ export default function Assessment() {
     <>
       <header className="page-intro">
         <h1>Patient Assessment</h1>
-        <p>Staff-assisted assessment for one discharge encounter. Confirm patient-reported details and verify clinical answers against hospital records.</p>
+        <p>Use the discharge record to answer questions about a hospital stay for a patient with documented diabetes.</p>
       </header>
       <AssessmentForm />
     </>

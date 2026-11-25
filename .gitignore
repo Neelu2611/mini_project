@@ -28,3 +28,5 @@ test-results/
 *.pkl
 *.joblib
 !/artifacts/patient_readmission_model.pkl
+/Dataset/uci296-public.zip
+/artifacts/diabetes-short-v1.ubj

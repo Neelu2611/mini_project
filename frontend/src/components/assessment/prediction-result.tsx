@@ -22,7 +22,7 @@ const percentage = (score: number) => `${(score * 100).toFixed(1)}%`;
 
 export function PredictionResult() {
   const router = useRouter();
-  const { result, clearAssessment } = useAssessmentSession();
+  const { result, draft, clearAssessment } = useAssessmentSession();
 
   function startNew() {
     clearAssessment();
@@ -57,6 +57,10 @@ export function PredictionResult() {
         </div>
         <p className="result-model"><strong>Model</strong> {prediction.model_name}</p>
         <p className="result-explanation">{explanations[prediction.outcome_label]}</p>
+        <p>On 20,153 held-out UCI encounters, this model identified 42.6% of early returns. Of the encounters it flagged as early returns, 18.7% had that recorded outcome.</p>
+        <h3>Diabetes encounter summary</h3>
+        <p>Hospital stay: {draft.answers.time_in_hospital} days. Inpatient visits in the preceding year: {draft.answers.number_inpatient}.</p>
+        <p>This model predicts readmission timing. Determining why someone returned or whether their treatment was appropriate requires clinical review. Treatment duration after discharge is unavailable in these inputs.</p>
       </section>
       <section className="panel result-panel result-breakdown" aria-labelledby="score-breakdown">
         <h3 id="score-breakdown">Uncalibrated model scores</h3>

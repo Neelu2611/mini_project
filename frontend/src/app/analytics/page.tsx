@@ -21,6 +21,7 @@ export default function Analytics() {
         <h1>Model Analytics</h1>
         <p>Historical performance of the selected Balanced XGBoost model and the notebook experiments.</p>
       </header>
+      <section className="panel insights-panel"><h2>Live assessment model evaluation</h2><p>Diabetes discharge XGBoost v1 correctly classified 49.3% of 20,153 held-out UCI encounters. For readmission before 30 days, precision was 18.7% and recall was 42.6%. Each patient appeared in only one partition during evaluation. <a href="https://doi.org/10.24432/C5230J">Training and evaluation source</a></p></section>
       <aside className="insights-note"><BookOpen size={20} aria-hidden="true" /><div><strong>Recorded notebook evaluation</strong><p>The 80/20 stratified encounter split used seed 42, with {format(evaluation.holdout)} holdout encounters. Historical evaluation has not been independently reproduced. The same holdout informed model selection.</p></div></aside>
       <section className="panel insights-panel" aria-labelledby="selected-model">
         <h2 id="selected-model">Selected model · Balanced XGBoost</h2>

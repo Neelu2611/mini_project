@@ -4,7 +4,7 @@ import { AssessmentSessionProvider } from "@/components/assessment/assessment-se
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Patient Readmission Prediction System", template: "%s | Readmission Prediction" },
+  title: { default: "Diabetes Readmission Prediction System", template: "%s | Readmission Prediction" },
   description: "An academic workspace for exploring the verified readmission prediction model.",
 };
 

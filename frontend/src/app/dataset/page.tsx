@@ -8,7 +8,8 @@ export const metadata = { title: "Dataset Overview" };
 export default function Dataset() {
   return (
     <>
-      <header className="page-intro"><h1>Dataset Overview</h1><p>Inventory of the supplied workbook and its compatibility with the deployed model.</p></header>
+      <header className="page-intro"><h1>Dataset Overview</h1><p>Training data for the ten-question assessment and inventory of the separate local workbook.</p></header>
+      <section className="panel insights-panel"><h2>Diabetes discharge model training data</h2><p>The short model uses UCI hospital encounters from patients with a recorded diabetes diagnosis. Its patient-disjoint evaluation covered 20,153 encounters from 14,304 patients. <a href="https://doi.org/10.24432/C5230J">UCI dataset 296</a></p></section>
       <section className="panel insights-panel" aria-labelledby="supplied-inventory">
         <h2 id="supplied-inventory"><FileSpreadsheet size={20} aria-hidden="true" /> Supplied workbook and working CSV</h2>
         <dl className="metric-grid">
@@ -21,7 +22,7 @@ export default function Dataset() {
       </section>
       <div className="insights-grid">
         <section className="panel insights-panel">
-          <h2><Database size={19} aria-hidden="true" /> Model compatibility</h2>
+          <h2><Database size={19} aria-hidden="true" /> Original notebook model compatibility</h2>
           <p>The supplied columns describe diabetes-related measurements, lifestyle and history. The model expects a discharge encounter with admission and discharge codes, prior visit counts, diagnosis codes, lab categories and medication states.</p>
           <p><code>Age</code> and <code>Gender</code> look similar by name, but the workbook uses numeric fields where the model requires fitted categorical strings. Its numerical <code>HbA1c</code> value also differs from the model’s recorded result category.</p>
         </section>

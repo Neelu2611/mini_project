@@ -66,7 +66,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside className={`sidebar ${open ? "is-open" : ""}`} id="workspace-navigation">
         <Link href="/" className="brand" onClick={() => setOpenPath(null)}>
           <span className="brand-symbol"><HeartPulse size={23} aria-hidden="true" /></span>
-          <span>Readmission<span className="brand-second">Prediction System</span></span>
+          <span>Diabetes Readmission<span className="brand-second">Prediction System</span></span>
         </Link>
         <nav className="navigation" aria-label="Workspace">
           <p className="nav-heading">Workspace</p>

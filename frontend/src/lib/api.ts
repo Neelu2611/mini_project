@@ -130,6 +130,9 @@ export function createApiClient({
     modelInfo: (signal?: AbortSignal) => request("model-info", isModelInfo, { signal }),
     features: (signal?: AbortSignal) => request("features", isFeatures, { signal }),
     samplePatient: (signal?: AbortSignal) => request("sample-patient", isSamplePatient, { signal }),
+    predictDiabetes: (answers: Record<string, unknown>, signal?: AbortSignal) => request("diabetes/predict", isPrediction, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(answers), signal,
+    }),
     predict: (patient: Patient, signal?: AbortSignal) => request("predict", isPrediction, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patient), signal,
     }),
