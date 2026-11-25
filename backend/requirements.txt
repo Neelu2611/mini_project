@@ -1,0 +1,14 @@
+# Notebook-observed versions for offline inference verification on Python 3.13.
+joblib==1.5.2
+numpy==2.3.3
+pandas==2.3.2
+scikit-learn==1.7.2
+scipy==1.16.2
+threadpoolctl==3.6.0
+xgboost==3.4.1
+
+# HTTP application and in-process API testing.
+fastapi==0.165.0
+uvicorn==0.54.0
+pydantic==2.14.4
+httpx==0.28.1

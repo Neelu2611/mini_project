@@ -1,0 +1,30 @@
+# Python environments, local runtimes, and caches
+/.venv/
+/.python/
+/.uv-cache/
+/.runtime/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Notebook execution state
+.ipynb_checkpoints/
+
+# Frontend dependencies, build output, and test artifacts
+node_modules/
+.next/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Local configuration and secrets; keep example templates
+.env
+.env.*
+!.env.example
+
+# Model bundles are only committed from the reviewed artifacts directory
+*.pkl
+*.joblib
+!/artifacts/patient_readmission_model.pkl

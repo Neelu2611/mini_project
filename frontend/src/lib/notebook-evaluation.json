@@ -1,0 +1,137 @@
+{
+  "accuracy": 0.5176869411417903,
+  "holdout": 20354,
+  "classification": [
+    {
+      "precision": 0.68,
+      "recall": 0.62,
+      "f1": 0.65,
+      "support": 10973,
+      "label": "0"
+    },
+    {
+      "precision": 0.48,
+      "recall": 0.39,
+      "f1": 0.43,
+      "support": 7109,
+      "label": "1"
+    },
+    {
+      "precision": 0.20485584218512898,
+      "recall": 0.4159330985915493,
+      "f1": 0.27450980392156865,
+      "support": 2272,
+      "label": "2"
+    },
+    {
+      "precision": 0.46,
+      "recall": 0.48,
+      "f1": 0.45,
+      "support": 20354,
+      "label": "macro avg"
+    },
+    {
+      "precision": 0.56,
+      "recall": 0.52,
+      "f1": 0.53,
+      "support": 20354,
+      "label": "weighted avg"
+    }
+  ],
+  "matrix": [
+    [
+      6813,
+      2337,
+      1823
+    ],
+    [
+      2485,
+      2779,
+      1845
+    ],
+    [
+      650,
+      677,
+      945
+    ]
+  ],
+  "comparisons": [
+    {
+      "cell": 57,
+      "model": "Random Forest, balanced weights",
+      "accuracy": 0.5800825390586617,
+      "recall": 0.01,
+      "f1": 0.01
+    },
+    {
+      "cell": 61,
+      "model": "Random Forest, custom weights",
+      "accuracy": 0.5804264518030854,
+      "recall": 0.01,
+      "f1": 0.02
+    },
+    {
+      "cell": 69,
+      "model": "Random Forest with SMOTE",
+      "accuracy": 0.5809177557236906,
+      "recall": 0.01,
+      "f1": 0.03
+    },
+    {
+      "cell": 94,
+      "model": "Random Forest with SMOTENC",
+      "accuracy": 0.5443156136385968,
+      "recall": 0.15,
+      "f1": 0.17
+    },
+    {
+      "cell": 100,
+      "model": "Logistic Regression with SMOTENC",
+      "accuracy": 0.5040778225410238,
+      "recall": 0.27,
+      "f1": 0.21
+    },
+    {
+      "cell": 110,
+      "model": "Scaled Logistic Regression with SMOTENC",
+      "accuracy": 0.49926304411909206,
+      "recall": 0.25,
+      "f1": 0.21
+    },
+    {
+      "cell": 114,
+      "model": "Tuned Random Forest with SMOTENC",
+      "accuracy": 0.49832956666994205,
+      "recall": 0.28,
+      "f1": 0.2
+    },
+    {
+      "cell": 128,
+      "model": "Weighted Logistic Regression with SMOTENC",
+      "accuracy": 0.5040778225410238,
+      "recall": 0.27,
+      "f1": 0.21
+    },
+    {
+      "cell": 142,
+      "model": "XGBoost with SMOTENC",
+      "accuracy": 0.5256951950476565,
+      "recall": 0.25,
+      "f1": 0.2
+    },
+    {
+      "cell": 179,
+      "model": "Unweighted XGBoost",
+      "accuracy": 0.5948216566768203,
+      "recall": 0.02,
+      "f1": 0.04
+    },
+    {
+      "cell": 185,
+      "model": "Balanced XGBoost",
+      "accuracy": 0.5176869411417903,
+      "recall": 0.4159330985915493,
+      "f1": 0.27450980392156865
+    }
+  ]
+}
