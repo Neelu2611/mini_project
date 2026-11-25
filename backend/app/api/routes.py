@@ -136,8 +136,17 @@ def predict(request: Request, patient: Annotated[PatientRequest, Body(openapi_ex
     prediction = service.predict_patient(patient.model_dump(by_alias=True))
     return prediction | {"disclaimer": DISCLAIMER}
 
-@router.post("/diabetes/predict", response_model=PredictionResponse)
-def predict_diabetes(answers: dict):
+SHORT_EXAMPLE = {
+    "age": "[60-70)", "time_in_hospital": 4, "number_inpatient": 1,
+    "number_emergency": 0, "discharge_disposition_id": 1, "number_outpatient": 0,
+    "num_medications": 12, "number_diagnoses": 6, "insulin": "Steady", "change": "No",
+}
+
+
+@router.post("/diabetes/predict", response_model=PredictionResponse, responses={503: {"model": ErrorResponse}})
+def predict_diabetes(answers: Annotated[dict, Body(openapi_examples={
+    "synthetic_discharge": {"summary": "Synthetic ten-question diabetes discharge", "value": SHORT_EXAMPLE}
+})]):
     """Predict using only the short discharge questionnaire."""
     from ..services.short_prediction import short_prediction
     return short_prediction(answers)

@@ -1,10 +1,14 @@
 """Inference for the patient-group evaluated short diabetes discharge model."""
+import base64
+import logging
+import os
 import hashlib
 import json
 from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
+from xgboost.core import XGBoostError
 from xgboost import XGBClassifier
 
 from ..api.errors import ModelUnavailableError
@@ -18,13 +22,20 @@ ROOT = Path(__file__).resolve().parents[3]
 def load_short_model():
     try:
         meta = json.loads((ROOT / "docs/diabetes-short-v1.json").read_text())
-        data = (ROOT / "artifacts/diabetes-short-v1.ubj").read_bytes()
+        secret_path = os.environ.get("READMISSION_SHORT_MODEL_B64_FILE")
+        if secret_path:
+            encoded = Path(secret_path).read_bytes()
+            data = base64.b64decode(b"".join(encoded.split()), validate=True)
+        else:
+            data = (ROOT / "artifacts/diabetes-short-v1.ubj").read_bytes()
         if hashlib.sha256(data).hexdigest() != meta["model_sha256"]:
+            logging.getLogger(__name__).error("Short model checksum mismatch.")
             raise ModelUnavailableError
         model = XGBClassifier()
         model.load_model(bytearray(data))
         return meta, model
-    except (OSError, ValueError) as error:
+    except (OSError, ValueError, XGBoostError, KeyError) as error:
+        logging.getLogger(__name__).error("Short model load failed (%s).", type(error).__name__)
         raise ModelUnavailableError from error
 
 

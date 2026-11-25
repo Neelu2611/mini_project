@@ -55,3 +55,19 @@ Production mode starts `next start` when port 3000 is free. If a dev server is a
 | No production build | Run the frontend build command before starting with `-Production`. |
 
 The prepared configuration is for local review. A future hosted deployment needs separate approval, controlled access, deployment-specific CORS and routing, and an approved data-handling plan. No hosted resources are provisioned.
+
+## Render Free: ten-question diabetes model
+
+The backend's regular health endpoint reports the original Balanced XGBoost service. The short questionnaire loads its separate, checksum-verified artifact on first use. A Git checkout contains its metadata but excludes the private UBJ. Supply its bytes through a backend-only Render secret file.
+
+1. On the trusted Windows machine, from the repository root, run the following PowerShell command. It copies the encoded artifact directly to the clipboard without printing it.
+
+   ```powershell
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes((Resolve-Path 'artifacts/diabetes-short-v1.ubj').Path)) | Set-Clipboard
+   ```
+
+2. In the Render backend, open **Environment > Secret Files > Add file**. Name it `diabetes-short-v1.b64` and paste the clipboard contents. Clear your clipboard and any retained clipboard history. Treat the encoded text as private model data.
+3. Set backend `READMISSION_SHORT_MODEL_B64_FILE=/etc/secrets/diabetes-short-v1.b64`. The encoded file is 577,824 bytes. Render allows 1 MB combined for all secret files per service or environment group. See [Render secret files](https://render.com/docs/configure-environment-variables#secret-files).
+4. Keep Python 3.12.12, root directory blank, build `pip install -r backend/requirements.txt`, and start `python -m uvicorn backend.app.main:app --host 0.0.0.0 --port "$PORT" --no-access-log`. Deploy the revision containing the secret-file loader.
+5. On the frontend, use root `frontend`, build `npm ci && npm run build`, start `npx next start --hostname 0.0.0.0 --port "$PORT"`, and set `NEXT_PUBLIC_API_BASE_URL=https://mini-project-backend-4hbr.onrender.com` before building. Rebuild after changing this variable. Set backend `READMISSION_ALLOWED_ORIGINS` to the exact frontend HTTPS origin (no path or trailing slash), then redeploy the backend. Separate multiple trusted origins with commas.
+6. Use the synthetic examples in the backend's `/docs` to run both POST prediction routes. Expect HTTP 200 for each. Open the frontend's assessment and verify its network request reaches the backend's `/api/diabetes/predict` and displays the returned result.
